@@ -4,7 +4,6 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
-    # Renders templates/homepage.html
     return render_template("homepage.html")
 
 # This runs only if the file is run using python
