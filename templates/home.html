@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello world!</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <div class="count-container">
+        <p class="count-text">Page has been visited: {{ count }} times</p> 
+      </div>
+      <div class="container-id">
+        Served by container: {{ container_id }}
+      </div>
+    </div>
+  </body>
+</html>

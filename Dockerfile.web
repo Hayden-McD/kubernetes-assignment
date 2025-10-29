@@ -1,4 +1,3 @@
-# Dockerfile.web
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -11,13 +10,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
-
 RUN pip install --no-cache-dir -r requirements.txt
 
+# copy the rest of the app
 COPY . /app
 
 EXPOSE 5000
 
-# Start the server using gunicorn
-# 'app:app' means: module/file 'app'.py, Flask instance named 'app'
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
