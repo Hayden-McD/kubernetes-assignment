@@ -1,2 +1,4 @@
 redis-data/
 Images/
+secret.yaml
+*.secret.yaml

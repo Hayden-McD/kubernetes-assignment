@@ -23,6 +23,12 @@ spec:
         envFrom:
         - configMapRef:
             name: flask-config
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
 ---
 apiVersion: v1
 kind: Service
