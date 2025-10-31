@@ -4,7 +4,9 @@ metadata:
   name: flask-config
 data:
   APP_NAME: "flask-app"
+  APP_VERSION: "1.0.0"
   APP_ENV: "production"
+  FEATURE_TOGGLE: "true"
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"
 ---
@@ -23,7 +25,6 @@ data:
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
         proxy_pass http://app:5000;
       }
     }

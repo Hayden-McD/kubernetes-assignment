@@ -12,8 +12,21 @@
     align-items: center;
 }
 
+.env-container {
+    padding: 2vh;
+}
+
 .count-text {
     font-size: 26px;
+}
+
+.title {
+    font-size: 26px;
+    padding-top: 2vh;
+}
+
+.data {
+    font-size: 20px;
 }
 
 .container-id {

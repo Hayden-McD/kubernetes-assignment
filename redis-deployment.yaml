@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-deployment
-  labels:
-    app: redis
 spec:
   replicas: 1
   selector:
@@ -15,37 +13,32 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:7-alpine
-        imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$REDIS_PASSWORD\""]
-        ports:
-        - containerPort: 6379
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret
-              key: REDIS_PASSWORD
-        volumeMounts:
-        - name: redis-conf
-          mountPath: /usr/local/etc/redis
+        - name: redis
+          image: redis:7-alpine
+          command: ["sh", "-c", "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$REDIS_PASSWORD\""]
+          ports:
+            - containerPort: 6379
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-conf
+              mountPath: /usr/local/etc/redis
       volumes:
-      - name: redis-conf
-        configMap:
-          name: redis-config
+        - name: redis-conf
+          configMap:
+            name: redis-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  labels:
-    app: redis
 spec:
   selector:
     app: redis
   ports:
-  - port: 6379
-    targetPort: 6379
-    # Default protocol is TCP.
-    # Default type is ClusterIP
+    - port: 6379
+      targetPort: 6379

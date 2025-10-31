@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-deployment
-  labels:
-    app: flask-app
 spec:
   replicas: 1
   selector:
@@ -15,32 +13,27 @@ spec:
         app: flask-app
     spec:
       containers:
-      - name: flask-container
-        image: app-image:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 5000
-        envFrom:
-        - configMapRef:
-            name: flask-config
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret
-              key: REDIS_PASSWORD
+        - name: flask-container
+          image: app-image:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: flask-config
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: app
-  labels:
-    app: flask-app
 spec:
   selector:
     app: flask-app
   ports:
-  - port: 5000
-    targetPort: 5000
-  # Default protocol is TCP
-  # Default type is ClusterIP
+    - port: 5000
+      targetPort: 5000

@@ -1,0 +1,3 @@
+# Deploy node-exporter with internal clusterIP so Preometheus can per node
+service:
+  type: ClusterIP

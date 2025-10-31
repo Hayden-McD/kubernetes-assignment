@@ -1,0 +1,88 @@
+server:
+  service:
+    type: NodePort
+    nodePort: 30900
+  persistentVolume:
+    enabled: false
+
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 30903
+
+extraScrapeConfigs: |
+  - job_name: 'kube-state-metrics'
+    static_configs:
+      - targets:
+          - prometheus-kube-state-metrics.monitoring.svc.cluster.local:8080
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+          - prometheus-prometheus-node-exporter.monitoring.svc.cluster.local:9100
+
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: Cluster-alerts
+        rules:
+          - alert: HighNodeCPU
+            expr: (sum by (instance) (rate(node_cpu_seconds_total{mode!="idle"}[5m]))
+                  / sum by (instance) (rate(node_cpu_seconds_total[5m]))) > 0.80
+            for: 5m
+            labels: { severity: warning }
+            annotations:
+              summary: "High CPU on {{ $labels.instance }}"
+              description: "CPU usage > 80% for 5m\nValue={{ $value }}"
+
+          - alert: HighNodeMemory
+            expr: (1 - (sum by (instance) (node_memory_MemAvailable_bytes)
+                        / sum by (instance) (node_memory_MemTotal_bytes))) > 0.90
+            for: 5m
+            labels: { severity: warning }
+            annotations:
+              summary: "High memory on {{ $labels.instance }}"
+              description: "Memory usage > 90% for 5m\nValue={{ $value }}"
+
+          - alert: PodHighRestarts
+            expr: increase(kube_pod_container_status_restarts_total[10m]) > 5
+            for: 5m
+            labels: { severity: warning }
+            annotations:
+              summary: "Pod restarting a lot ({{ $labels.namespace }}/{{ $labels.pod }})"
+              description: "Container {{ $labels.container }} restarted > 5 times in 10m."
+
+          - alert: PodNotReady
+            expr: kube_pod_status_ready{condition="true"} == 0
+            for: 10m
+            labels: { severity: critical }
+            annotations:
+              summary: "Pod not ready ({{ $labels.namespace }}/{{ $labels.pod }})"
+              description: "Pod has been not ready for > 10 minutes."
+
+          - alert: NodeNotReady
+            expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+            for: 5m
+            labels: { severity: critical }
+            annotations:
+              summary: "Node not ready ({{ $labels.node }})"
+              description: "Kubernetes node has been NotReady for > 5 minutes."
+
+          - alert: AlwaysFiringTest
+            expr: vector(1)
+            for: 30s
+            labels: { severity: info }
+            annotations:
+              summary: "Test alert"
+              description: "Verifies alert pipeline."
+
+alertmanagerFiles:
+  alertmanager.yml: |
+    route:
+      receiver: "ui-only"
+      group_by: ["alertname", "namespace", "instance"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 2h
+    receivers:
+      - name: "ui-only"

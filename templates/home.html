@@ -15,6 +15,19 @@
       <div class="container-id">
         Served by container: {{ container_id }}
       </div>
+      <ul class="env-container">
+        <div class="title">App Version</div>
+        <li class="data">{{ app_version }}</li>
+
+        <div class="title">Enviroment</div>
+        <li class="data">{{ app_env }}</li>
+        
+        <div class="title">Feature Toggle</div>
+        <li class="data">{{ feature_toggle }}</li>
+
+        <div class="title">Database Secret</div>
+        <li class="data">{{ db_pass }}</li>
+      </ul>
     </div>
   </body>
 </html>
